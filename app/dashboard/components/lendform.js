@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import ConfirmationModal from './confirmationModal';
 
 const LendForm = () => {
   const points = [
@@ -12,18 +13,57 @@ const LendForm = () => {
 
   const [lendAmount, setLendAmount] = useState('');
   const [interestRate, setInterestRate] = useState('');
-  const [lendDuration, setLendDuration] = useState(0);
   const [position, setPosition] = useState(0);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null);
 
   const handleLendSubmit = (e) => {
     e.preventDefault();
     const durationInMonths = points[position].value;
-    console.log({ 
-      lendAmount, 
-      interestRate, 
-      lendDuration: durationInMonths 
+    const decimalInterestRate = parseFloat((interestRate / 100).toFixed(2)); // Convert to decimal number; not working correctly
+    setModalData({ lendAmount, interestRate: decimalInterestRate, lendDuration: durationInMonths });
+    setModalOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    const durationInMonths = points[position].value;
+    const authToken = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (!authToken || !user) {
+      console.error('Authorization token or user data missing');
+      return;
+    }
+
+    const userData = JSON.parse(user);
+    const userId = userData.id;
+
+    const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:8kzD815Z/lender', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        lendAmount: parseFloat(lendAmount),
+        interestRate: parseFloat(interestRate),
+        lendDuration: durationInMonths,
+        user_id: userId,
+      }),
     });
+
+    if (response.ok) {
+      console.log('Lend request successful');
+      // Reset form fields
+      setLendAmount('');
+      setInterestRate('');
+      setPosition(0);
+      setModalOpen(false);
+    } else {
+      const errorData = await response.json();
+      console.error('Lend request failed:', errorData);
+    }
   };
 
   const handleMouseDown = (e) => {
@@ -49,81 +89,91 @@ const LendForm = () => {
   };
 
   return (
-    <form onSubmit={handleLendSubmit} className="text-white bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
-      <div className="flex flex-col">
-        <label htmlFor="lendAmount" className="mb-2 font-medium">Amount to Lend</label>
-        <input 
-          id="lendAmount" 
-          type="number"
-          value={lendAmount} 
-          onChange={(e) => setLendAmount(e.target.value)} 
-          className="mt-1 p-2 w-full rounded-md bg-gray-700 border border-gray-600 text-white"
-          placeholder="Enter amount in Dollars"
-          step="0.00000001"
-        />
-      </div>
-      <div className="flex flex-col">
-        <label className="mb-2 font-medium flex items-center">
-          Interest Rate (%) 
-          <span 
-            className="ml-1 cursor-pointer relative"
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="w-5 h-5 text-blue-400 rounded-full bg-gray-700 p-1" 
-              viewBox="0 0 24 24"
+    <>
+      <form onSubmit={handleLendSubmit} className="text-white bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
+        <div className="flex flex-col">
+          <label htmlFor="lendAmount" className="mb-2 font-medium">Amount to Lend</label>
+          <input 
+            id="lendAmount" 
+            type="number"
+            value={lendAmount} 
+            onChange={(e) => setLendAmount(e.target.value)} 
+            className="mt-1 p-2 w-full rounded-md bg-gray-700 border border-gray-600 text-white"
+            placeholder="Enter amount in Dollars"
+            step="0.00000001"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="mb-2 font-medium flex items-center">
+            Interest Rate (%) 
+            <span 
+              className="ml-1 cursor-pointer relative"
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
             >
-              <path 
-                fill="currentColor" 
-                d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0-7a1.5 1.5 0 0 1 1.5 1.5v1.5h-3v-1a1.5 1.5 0 0 1 1.5-1.5z"
-              />
-            </svg>
-            {showTooltip && (
-              <div className="absolute left-1/2 transform -translate-x-1/2 mt-1 w-48 bg-gray-700 text-white text-sm rounded p-2 shadow-lg">
-                This is the minimum interest rate you're willing to accept over the specified duration.
-              </div>
-            )}
-          </span>
-        </label>
-        <input 
-          id="lendInterestRate" 
-          type="number" 
-          value={interestRate} 
-          onChange={(e) => setInterestRate(e.target.value)} 
-          className="mt-1 p-2 w-full rounded-md bg-gray-700 border border-gray-600 text-white"
-          placeholder="e.g., 4"
-        />
-      </div>
-      <div className="flex flex-col">
-        <label className="mb-2 font-medium">Duration</label>
-        <div className="relative w-full h-10">
-          <div
-            className="slider h-2 bg-gray-300 rounded-full cursor-pointer"
-            onMouseDown={handleMouseDown}
-          >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="w-5 h-5 text-blue-400 rounded-full bg-gray-700 p-1" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  fill="currentColor" 
+                  d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0-7a1.5 1.5 0 0 1 1.5 1.5v1.5h-3v-1a1.5 1.5 0 0 1 1.5-1.5z"
+                />
+              </svg>
+              {showTooltip && (
+                <div className="absolute left-1/2 transform -translate-x-1/2 mt-1 w-48 bg-gray-700 text-white text-sm rounded p-2 shadow-lg">
+                  This is the minimum interest rate you're willing to accept over the specified duration.
+                </div>
+              )}
+            </span>
+          </label>
+          <input 
+            id="lendInterestRate" 
+            type="number" 
+            value={interestRate} 
+            onChange={(e) => setInterestRate(e.target.value)} 
+            className="mt-1 p-2 w-full rounded-md bg-gray-700 border border-gray-600 text-white"
+            placeholder="e.g., 4"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="mb-2 font-medium">Duration</label>
+          <div className="relative w-full h-10">
             <div
-              className="thumb absolute w-4 h-4 bg-blue-500 rounded-full cursor-pointer"
-              style={{ left: `${(position / (points.length - 1)) * 100}%`, transform: 'translateX(-50%)' }}
-            />
-          </div>
-          <div className="flex justify-between mt-2">
-            {points.map((point, index) => (
-              <span key={index} className={`text-sm ${index === position ? 'font-bold' : ''}`}>
-                {point.label}
-              </span>
-            ))}
+              className="slider h-2 bg-gray-300 rounded-full cursor-pointer"
+              onMouseDown={handleMouseDown}
+            >
+              <div
+                className="thumb absolute w-4 h-4 bg-blue-500 rounded-full cursor-pointer"
+                style={{ left: `${(position / (points.length - 1)) * 100}%`, transform: 'translateX(-50%)' }}
+              />
+            </div>
+            <div className="flex justify-between mt-2">
+              {points.map((point, index) => (
+                <span key={index} className={`text-sm ${index === position ? 'font-bold' : ''}`}>
+                  {point.label}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      <button 
-        type="submit" 
-        className="mt-4 w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-      >
-        Lend
-      </button>
-    </form>
+        <button 
+          type="submit" 
+          className="mt-4 w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          Lend
+        </button>
+      </form>
+
+      <ConfirmationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onConfirm={handleConfirm} 
+        data={modalData}
+        isLend={true} // Pass true to indicate this is for lending
+      />
+    </>
   );
 };
 

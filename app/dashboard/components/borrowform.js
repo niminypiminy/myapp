@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import ConfirmationModal from './confirmationModal';
 
 const BorrowForm = () => {
   const points = [
@@ -12,18 +13,75 @@ const BorrowForm = () => {
 
   const [borrowAmount, setBorrowAmount] = useState('');
   const [interestRate, setInterestRate] = useState('');
-  const [position, setPosition] = useState(0); // Track the slider position
-  const [showTooltip, setShowTooltip] = useState(false); // State for tooltip visibility
+  const [position, setPosition] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null);
 
   const handleBorrowSubmit = (e) => {
     e.preventDefault();
-    const durationInMonths = points[position].value; // Get the selected duration
-    console.log({ 
-      borrowAmount, 
-      interestRate, 
-      borrowDuration: durationInMonths 
+    const durationInMonths = points[position].value;
+    const decimalInterestRate = parseFloat((interestRate / 100).toFixed(2)); // Convert to decimal number; not working correctly
+    setModalData({ borrowAmount, interestRate: decimalInterestRate, borrowDuration: durationInMonths });
+    setModalOpen(true);
+  };
+
+ 
+  const handleConfirm = async () => {
+    const durationInMonths = points[position].value; 
+    const authToken = localStorage.getItem('token'); 
+    const user = localStorage.getItem('user'); 
+  
+    console.log('Auth Token:', authToken); 
+    console.log('User Data:', user); 
+  
+    if (!authToken) {
+      console.error('No authToken found in local storage');
+      return; 
+    }
+  
+    if (!user) {
+      console.error('No user data found in local storage');
+      return; 
+    }
+  
+    // Parse user data to get the user ID
+    const userData = JSON.parse(user);
+    const userId = userData.id; 
+  
+    console.log('User ID:', userId); 
+  
+    console.log('Sending borrow request with the following data:', {
+      ...modalData,
+      user_id: userId, 
+      durationInMonths,
     });
-    // Function Logic here
+  
+    const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:8kzD815Z/borrower', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`, // Use the token for auth
+      },
+      body: JSON.stringify({
+        ...modalData,
+        user_id: userId, // Send the user ID
+        borrowDuration: durationInMonths, // Keep the duration in months
+      }),
+    });
+  
+    console.log('Response Status:', response.status);
+    
+    if (response.ok) {
+      console.log('Borrow request successful');
+      setBorrowAmount('');
+      setInterestRate('');
+      setPosition(0);
+      setModalOpen(false);
+    } else {
+      const errorData = await response.json();
+      console.error('Borrow request failed:', errorData);
+    }
   };
 
   const handleMouseDown = (e) => {
@@ -123,6 +181,13 @@ const BorrowForm = () => {
       >
         Borrow
       </button>
+
+      <ConfirmationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onConfirm={handleConfirm} 
+        data={modalData}
+      />
     </form>
   );
 };

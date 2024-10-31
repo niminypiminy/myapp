@@ -1,4 +1,3 @@
-require("buffer");
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { generateMnemonic, mnemonicToSeedSync } from 'bip39';
