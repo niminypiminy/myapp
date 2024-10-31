@@ -1,11 +1,13 @@
 import React from 'react';
 import { FaBitcoin } from 'react-icons/fa';
 import { BiDollar } from 'react-icons/bi';
+import { AiOutlineGold } from 'react-icons/ai'; // Example icon for XAUT
 
 const WalletInfo = React.memo(({ type, balance, created, onCreate, onReceive, onSend, onImport }) => {
   const icons = {
     usdt: <BiDollar className="text-4xl text-green-400 mr-3" />,
     btc: <FaBitcoin className="text-4xl text-orange-500 mr-3" />,
+    xaut: <AiOutlineGold className="text-4xl text-yellow-500 mr-3" />, // maybe change XAUT icon
   };
 
   return (

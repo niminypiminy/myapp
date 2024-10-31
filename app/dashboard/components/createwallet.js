@@ -1,6 +1,5 @@
 require("buffer");
 
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { generateMnemonic, mnemonicToSeedSync } from 'bip39';
 import { payments } from 'bitcoinjs-lib';
@@ -11,7 +10,6 @@ import { toast } from 'react-toastify';
 import { TonClient, WalletContractV4 } from '@ton/ton';
 import { mnemonicToPrivateKey, mnemonicNew } from '@ton/crypto'; 
 
-console.log('Available functions in @ton/crypto:', { mnemonicToPrivateKey, mnemonicNew });
 const bip32 = BIP32Factory(ecc);
 
 const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType }) => {
@@ -29,10 +27,10 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
     const authToken = localStorage.getItem('token');
     let walletDetails;
     let endpoint = '';
-  
+
     try {
       console.log('Creating wallet of type:', walletType);
-  
+
       if (walletType === 'btc') {
         const seed = mnemonicToSeedSync(mnemonic);
         const root = bip32.fromSeed(seed);
@@ -42,37 +40,33 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
         endpoint = 'auth/create-btc';
         console.log('Bitcoin wallet details:', walletDetails);
       } else if (walletType === 'usdt' || walletType === 'xaut') {
-        // Create Ton Client
         const client = new TonClient({
           endpoint: 'https://toncenter.com/api/v2/jsonRPC',
         });
-  
-        // Generate mnemonic
-        const mnemonics = await mnemonicNew(); 
+
+        const mnemonics = await mnemonicNew();
         const keyPair = await mnemonicToPrivateKey(mnemonics);
-  
-        // Create wallet contract
-        const workchain = 0; // Default workchain  (this may not be correct. e instead of u?)
+
+        const workchain = 0; //this might not be correct (e instead of u?)
         const wallet = WalletContractV4.create({ workchain, publicKey: keyPair.publicKey });
         const contract = client.open(wallet);
-  
-        // Get the wallet address
+
         const walletAddress = wallet.address.toString();
-  
+
         walletDetails = {
           walletType,
-          mnemonic: mnemonics.join(' '), // Stored the mnemonic as a string
-          [walletType]: walletAddress, // Include the generated wallet address
+          mnemonic: mnemonics.join(' '),
+          [walletType]: walletAddress,
         };
         endpoint = `auth/create-${walletType}`;
         console.log(`${walletType.toUpperCase()} wallet details:`, walletDetails);
       } else {
         console.error('Unsupported wallet type:', walletType);
-        return; // Exit if wallet type is unsupported
+        return; 
       }
-  
+
       console.log('Endpoint:', endpoint);
-  
+
       const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:8kzD815Z/${endpoint}`, {
         method: 'POST',
         headers: {
@@ -81,19 +75,16 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
         },
         body: JSON.stringify(walletDetails),
       });
-  
-      console.log('Response status:', response.status);
-      
+
       if (!response.ok) {
-        const errorData = await response.json(); // Log error for debugging
+        const errorData = await response.json();
         console.error('Error response:', errorData);
         throw new Error('Failed to create wallet');
       }
-  
-      const responseData = await response.json(); // Parse the response
+
+      const responseData = await response.json();
       console.log('Success response:', responseData);
-  
-      // Handle success
+
       onWalletCreated(walletType);
       setIsWalletCreated(true);
       toast.success(`${walletType.toUpperCase()} wallet created successfully!`);
@@ -102,11 +93,11 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
       toast.error('An error occurred while creating the wallet.');
     }
   }, [walletType, mnemonic, onWalletCreated]);
+
   const handleContinue = useCallback(() => {
-    setIsMnemonicModalOpen(false);
-    createWalletAPI(); 
-    onRequestClose();
-  }, [createWalletAPI, onRequestClose]);
+    setIsMnemonicModalOpen(false); // Close the mnemonic modal
+    createWalletAPI(); // Proceed to create the wallet
+  }, [createWalletAPI]);
 
   useEffect(() => {
     if (isOpen && !isWalletCreated) {
