@@ -25,7 +25,7 @@ const Discovery = () => {
   ];
 
   const handleCardClick = (link) => {
-    // Navigate directly to the blog post
+    // Navigate directly to the blog post must be fixed.
     router.push(link);
   };
 

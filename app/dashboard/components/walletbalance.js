@@ -98,10 +98,10 @@ const WalletBalance = React.memo(({ user }) => {
             onCreate={createWallet}
             onReceive={() => openQRModal(type)}
             onSend={() => {
-              setWalletType(type); // Set the wallet type
-              setIsSendModalOpen(true); // Open the send modal
+              setWalletType(type); 
+              setIsSendModalOpen(true); 
             }}
-            onImport={() => setIsImportWalletOpen(true)} // Ensure this line is included
+            onImport={() => setIsImportWalletOpen(true)} 
           />
         ))}
       </div>
@@ -134,7 +134,7 @@ const WalletBalance = React.memo(({ user }) => {
         isOpen={isSendModalOpen} 
         onRequestClose={() => setIsSendModalOpen(false)} 
         onSend={handleSend} 
-        walletType={walletType} // Pass the wallet type here
+        walletType={walletType} 
       />
     </div>
   );

@@ -8,14 +8,14 @@ const Transactions = () => {
   const [currency, setCurrency] = useState('btc');
   const [swapDirection, setSwapDirection] = useState('btc-to-usdc');
 
-  // Example addresses. In a real app, these would be dynamically set or fetched.
+ 
   const btcAddress = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
   const usdcAddress = '0x1234567890abcdef1234567890abcdef123456';
 
   useEffect(() => {
-    // Simulate getting live rates. This would ideally be an API call.
-    const fakeRate = { btcToUsdc: 30000, usdcToBtc: 1 / 30000 }; // Example rates
-    // Here you would set the state with real exchange rates
+    
+    const fakeRate = { btcToUsdc: 30000, usdcToBtc: 1 / 30000 }; 
+    
   }, []);
 
   const handleAction = () => {

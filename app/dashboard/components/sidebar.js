@@ -18,7 +18,6 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     localStorage.setItem('activeTab', tab); // Store active tab in local storage
-    // Optionally navigate if needed:
     if (tab !== 'discovery') {
       router.push(`/dashboard?activeTab=${tab}`);
     }

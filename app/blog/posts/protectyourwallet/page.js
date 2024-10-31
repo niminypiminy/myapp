@@ -1,4 +1,4 @@
-"use client"; // Make sure to include this at the top for client components
+"use client"; 
 
 import React, { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';

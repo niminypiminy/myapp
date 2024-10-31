@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useFormspark } from '@formspark/use-formspark';
 import { useRouter } from 'next/navigation';
 
-const FORMSPARK_FORM_ID = "BCiQzHi2"; // Your actual form ID
+const FORMSPARK_FORM_ID = "BCiQzHi2"; // Form ID
 
 const Contact = () => {
   const router = useRouter();
@@ -44,7 +44,7 @@ const Contact = () => {
     // Redirect after a short delay
     setTimeout(() => {
       router.push('/dashboard'); // Change '/dashboard' to the actual dashboard route
-    }, 2000); // Redirect after 2 seconds
+    }, 2000); // Redirect after 2 seconds 
   };
 
   return (

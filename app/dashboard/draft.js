@@ -33,7 +33,7 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
         const { address } = payments.p2pkh({ pubkey: keyPair.publicKey });
         walletDetails = { walletType: 'btc', mnemonic, address };
         endpoint = 'auth/create-btc';
-      } else if (walletType === 'usdt' || walletType === 'sol') {
+      } else if (walletType === 'usdt' || walletType === 'sol') {  // replace with Ton
         const solanaKeypair = Keypair.generate();
         const publicKey = solanaKeypair.publicKey.toString();
         walletDetails = {

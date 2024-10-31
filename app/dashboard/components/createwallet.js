@@ -9,9 +9,8 @@ import * as ecc from 'tiny-secp256k1';
 import MnemonicModal from './mnemonic';
 import { toast } from 'react-toastify';
 import { TonClient, WalletContractV4 } from '@ton/ton';
-import { mnemonicToPrivateKey, mnemonicNew } from '@ton/crypto'; // Adjust imports if needed
+import { mnemonicToPrivateKey, mnemonicNew } from '@ton/crypto'; 
 
-// Log available functions in the crypto module
 console.log('Available functions in @ton/crypto:', { mnemonicToPrivateKey, mnemonicNew });
 const bip32 = BIP32Factory(ecc);
 
@@ -43,17 +42,17 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
         endpoint = 'auth/create-btc';
         console.log('Bitcoin wallet details:', walletDetails);
       } else if (walletType === 'usdt' || walletType === 'xaut') {
-        // Create a Ton Client
+        // Create Ton Client
         const client = new TonClient({
           endpoint: 'https://toncenter.com/api/v2/jsonRPC',
         });
   
-        // Generate a new mnemonic
-        const mnemonics = await mnemonicNew(); // Use this if mnemonicNew is correct
+        // Generate mnemonic
+        const mnemonics = await mnemonicNew(); 
         const keyPair = await mnemonicToPrivateKey(mnemonics);
   
         // Create wallet contract
-        const workchain = 0; // Default workchain
+        const workchain = 0; // Default workchain  (this may not be correct. e instead of u?)
         const wallet = WalletContractV4.create({ workchain, publicKey: keyPair.publicKey });
         const contract = client.open(wallet);
   
@@ -62,7 +61,7 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
   
         walletDetails = {
           walletType,
-          mnemonic: mnemonics.join(' '), // Store the mnemonic as a string
+          mnemonic: mnemonics.join(' '), // Stored the mnemonic as a string
           [walletType]: walletAddress, // Include the generated wallet address
         };
         endpoint = `auth/create-${walletType}`;
@@ -86,7 +85,7 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
       console.log('Response status:', response.status);
       
       if (!response.ok) {
-        const errorData = await response.json(); // Log error response for debugging
+        const errorData = await response.json(); // Log error for debugging
         console.error('Error response:', errorData);
         throw new Error('Failed to create wallet');
       }
@@ -105,7 +104,7 @@ const CreateWalletModal = ({ isOpen, onRequestClose, onWalletCreated, walletType
   }, [walletType, mnemonic, onWalletCreated]);
   const handleContinue = useCallback(() => {
     setIsMnemonicModalOpen(false);
-    createWalletAPI(); // Call the API here after user clicks continue
+    createWalletAPI(); 
     onRequestClose();
   }, [createWalletAPI, onRequestClose]);
 

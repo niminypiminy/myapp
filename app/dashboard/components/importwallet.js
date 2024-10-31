@@ -5,11 +5,11 @@ const ImportWalletModal = ({ isOpen, onRequestClose, onWalletImported }) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleImport = () => {
-    // Your wallet import logic
+    // The wallet import logic
     if (inputValue) {
       const walletType = 'btc'; // Determine the wallet type from the input
-      // You might want to extract and set the balance here based on the imported wallet
-      onWalletImported(walletType, { created: true, balance: 0 }); // Update the wallet state with the imported data
+      // should extract and set the balance here based on the imported wallet
+      onWalletImported(walletType, { created: true, balance: 0 }); // Updating the wallet state with the imported data
       toast.success('Wallet imported successfully!');
       onRequestClose();
     } else {

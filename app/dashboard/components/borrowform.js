@@ -23,7 +23,7 @@ const BorrowForm = () => {
       interestRate, 
       borrowDuration: durationInMonths 
     });
-    // Handle borrow form submission logic here
+    // Function Logic here
   };
 
   const handleMouseDown = (e) => {

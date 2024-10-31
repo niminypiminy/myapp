@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const TwoFactorAuth = ({ user }) => {
-  const [is2FAEnabled, setIs2FAEnabled] = useState(user.twoFactorEnabled || false); // Assume user object has this property
+  const [is2FAEnabled, setIs2FAEnabled] = useState(user.twoFactorEnabled || false); //haven't tested yet
   const [codeSent, setCodeSent] = useState(false);
   const [message, setMessage] = useState('');
 

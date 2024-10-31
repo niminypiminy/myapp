@@ -23,7 +23,7 @@ const getGreeting = (name) => {
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('balance'); // Default tab
+  const [activeTab, setActiveTab] = useState('balance'); 
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const Dashboard = () => {
     const storedTab = localStorage.getItem('activeTab');
     if (storedTab) {
       setActiveTab(storedTab);
-      localStorage.removeItem('activeTab'); // Clean up
+      localStorage.removeItem('activeTab'); 
     }
 
     const fetchUserData = async () => {
@@ -82,7 +82,7 @@ const Dashboard = () => {
       case 'contact':
         return <Contact />;
       default:
-        return <WalletBalance user={user} />; // Pass user data to WalletBalance
+        return <WalletBalance user={user} />; 
     }
   };
 
