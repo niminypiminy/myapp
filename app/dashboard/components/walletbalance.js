@@ -12,8 +12,6 @@ const WalletBalance = React.memo(({ user }) => {
   const [wallets, setWallets] = useState({
     usdt: { balance: 0, created: false },
     btc: { balance: 0, created: false },
-    xaut: { balance: 0, created: false },
-    sol: { balance: 0, created: false },
   });
   
   // Modal states
@@ -29,8 +27,6 @@ const WalletBalance = React.memo(({ user }) => {
       const updatedWallets = {
         usdt: { balance: ensureNumber(user.usdt, 0), created: !!user.usdt },
         btc: { balance: ensureNumber(user.address ? 1.5 : 0), created: !!user.address },
-        xaut: { balance: 0, created: false },
-        sol: { balance: ensureNumber(user.sol, 0), created: !!user.sol },
       };
       setWallets(updatedWallets);
       localStorage.setItem('wallets', JSON.stringify(updatedWallets));
@@ -56,7 +52,6 @@ const WalletBalance = React.memo(({ user }) => {
     switch (type) {
       case 'usdt': address = user.usdt; break;
       case 'btc': address = user.address; break;
-      case 'sol': address = user.sol; break;
       default: address = '';
     }
     
@@ -69,8 +64,8 @@ const WalletBalance = React.memo(({ user }) => {
   };
 
   const totalBalance = ensureNumber(wallets.usdt.balance) +
-    (wallets.btc.created ? ensureNumber(wallets.btc.balance, 0) * 68200 : 0) +
-    (wallets.sol.created ? ensureNumber(wallets.sol.balance, 0) : 0);
+    (wallets.btc.created ? ensureNumber(wallets.btc.balance, 0) * 68200 : 0) 
+    
 
   const handleSend = (address) => {
     setIsSendModalOpen(false); // Close the modal after sending
@@ -94,7 +89,7 @@ const WalletBalance = React.memo(({ user }) => {
       </div>
 
       <div className="space-y-4">
-        {['usdt', 'btc', 'xaut', 'sol'].map(type => (
+        {['usdt', 'btc',].map(type => (
           <WalletInfo
             key={type}
             type={type}
